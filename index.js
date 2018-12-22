@@ -20,24 +20,26 @@ function play(word){
             losses++;
             console.log(`The current score is ${wins} wins and ${losses} losses.`);
             playAgain();
-        }
-        let letter =word.checkLetter(response.guess)
-        if(typeof letter != 'undefined' && letter.guessed){
-            console.log('\ncorrect\n');
-            counter--;
-            if(word.savedWord.length == word.wordRes.length){
-                console.log('You won this turn');
-                wins++;
-                console.log(`The current score is ${wins} wins and ${losses} losses.`);
-                playAgain();
+        }else{
+            let letter =word.checkLetter(response.guess)
+            if(typeof letter != 'undefined' && letter.guessed){
+                console.log('\ncorrect\n');
+                counter--;
+                if(word.savedWord.length == word.wordRes.length){
+                    console.log('You won this turn');
+                    wins++;
+                    console.log(`The current score is ${wins} wins and ${losses} losses.`);
+                    playAgain();
+                }else{
+                    play(word);
+                }
             }else{
+                console.log('\nIncorrect\n');
+                counter--;
                 play(word);
             }
-        }else{
-            console.log('\nIncorrect\n');
-            counter--;
-            play(word);
         }
+        
     })
 }
 function generateWord(){

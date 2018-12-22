@@ -1,7 +1,13 @@
 let inquirer = require('inquirer');
+let scoreboard = require('./scoreboard');
 var Word = require('./Word');
 let playWords = ['See you','gods plan','idol'];
 let counter = 16;
+let wins = scoreboard.wins;
+let losses = scoreboard.losses;
+
+const fs = require("fs");
+
 function play(word){
     word.displayWord();
     inquirer.prompt([
@@ -11,6 +17,8 @@ function play(word){
         }
     ]).then(function(response){
         if(counter ==0){
+            losses++;
+            console.log(`The current score is ${wins} wins and ${losses} losses.`);
             playAgain();
         }
         let letter =word.checkLetter(response.guess)
@@ -19,6 +27,8 @@ function play(word){
             counter--;
             if(word.savedWord.length == word.wordRes.length){
                 console.log('You won this turn');
+                wins++;
+                console.log(`The current score is ${wins} wins and ${losses} losses.`);
                 playAgain();
             }else{
                 play(word);

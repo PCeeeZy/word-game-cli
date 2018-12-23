@@ -1,19 +1,13 @@
 let inquirer = require('inquirer');
-let wordScoreboard = require('./wordScoreboard');
-let letterScoreboard = require('./LetterScoreboard');
 var Word = require('./Word');
 var character = require('./pyschic');
+const fs = require("fs");
 let playWords = ['See you','gods plan','idol'];
 const chars = "abcdefghijklmnopqrstuvwxyz";
-
 let counter = 16;
-let wordWins = wordScoreboard.wins;
-let wordLosses = wordScoreboard.losses;
-let letterWins = wordScoreboard.wins;
-let letterLosses = wordScoreboard.losses;
-const fs = require("fs");
+let wordLosses =0,wordWins=0,letterLosses=0,letterWins=0;
+getSavedScores();
 
-// function that initiates game using inquirer
 function playWord(word){
     word.displayWord();
     inquirer.prompt([
@@ -22,21 +16,20 @@ function playWord(word){
             name:'guess'
         }
     ]).then(function(response){
-        // loss condition
-        if(counter ==0){
+        if(counter == 0){
             wordLosses++;
+            writeTheScoreToFile('word_score.txt');
             console.log(`The current score is ${wordWins} wins and ${wordLosses} losses.`);
             playAgain();
         }else{
-            // win or go again condition 
             let letter =word.checkLetter(response.guess)
             if(typeof letter != 'undefined' && letter.guessed){
                 console.log('\ncorrect\n');
                 counter--;
-                // compare word result to the saved word 
                 if(word.savedWord.length == word.wordRes.length){
                     console.log('You won this turn');
                     wordWins++;
+                    writeTheScoreToFile('word_score.txt');
                     console.log(`The current score is ${wordWins} wins and ${wordLosses} losses.`);
                     playAgain();
                 }else{
@@ -51,7 +44,6 @@ function playWord(word){
         
     })
 }
-// function to prompt user to play again
 function playAgain(){
     inquirer.prompt([
         {
@@ -80,6 +72,7 @@ function playChar(charToPlay){
     ]).then(function(response){
         if(counter ==0){
             letterLosses++;
+            writeTheScoreToFile('psychic_score.txt');
             console.log(`The current score is ${letterWins} wins and ${letterLosses} losses.`);
             playAgainChar();
         }else{
@@ -88,6 +81,7 @@ function playChar(charToPlay){
                 counter--;
                 console.log('You won this turn');
                 letterWins++;
+                writeTheScoreToFile('psychic_score.txt');
                 console.log(`The current score is ${letterWins} wins and ${letterLosses} losses.`);
                 playAgainChar();
             }else{
@@ -152,6 +146,40 @@ function play(){
                 console.log('Goodbye so sad to leave me');
                 process.exit();
         }
+    });
+}
+function writeTheScoreToFile(file){
+    switch (file) {
+        case 'word_score.txt':
+            fs.writeFile(file,'wins: '+wordWins+'\n'+'losses: '+wordLosses,function(err){if(err) console.log(err);});
+            break;
+        case 'psychic_score.txt':
+            fs.writeFile(file,'wins: '+letterWins+'\n'+'losses: '+letterLosses,function(err){if(err) console.log(err);});
+            break;
+    }
+}
+function getSavedScores(){
+    fs.readFile('word_score.txt',function(err,data){
+        if(err){
+            console.log(err);
+            return;
+        }
+        let scores = data.toString().split('\n');
+        let win_score = scores[0].toString().split(":");
+        wordWins = parseInt(win_score[1]);
+        let lose_score = scores[1].toString().split(":");
+        wordLosses = parseInt(lose_score[1]);
+    });
+    fs.readFile('psychic_score.txt',function(err,data){
+        if(err){
+            console.log(err);
+            return;
+        }
+        let scores = data.toString().split('\n');
+        let win_score = scores[0].toString().split(":");
+        letterWins = parseInt(win_score[1]);
+        let lose_score = scores[1].toString().split(":");
+        letterLosses = parseInt(lose_score[1]);
     });
 }
 play();

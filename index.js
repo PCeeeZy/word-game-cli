@@ -106,7 +106,7 @@ function playChar(charToPlay){
                 console.log(`The current score is ${letterWins} wins and ${letterLosses} losses.`);
                 playAgainChar();
             }else{
-                //player loose of he guessed incorrectly
+                //player lose of he guessed incorrectly
                 console.log('\nIncorrect\n');
                 counter--;
                 playChar(charToPlay);

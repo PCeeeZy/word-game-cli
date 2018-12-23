@@ -1,10 +1,13 @@
 //game requirements
 let inquirer = require('inquirer');
+const chalk = require('chalk');
+const figlet = require('figlet');
 var Word = require('./Word');
 var character = require('./pyschic');
 const fs = require("fs");
+
 //words to be guessed for hangman
-let playWords = ['See you','gods plan','idol'];
+let playWords = ['see you','gods plan','idol'];
 //array of letters to randomly choose
 const chars = "abcdefghijklmnopqrstuvwxyz";
 //counter to end the game after 16 tries 
@@ -15,6 +18,11 @@ let wordLosses =0,wordWins=0,letterLosses=0,letterWins=0;
 getSavedScores();
 //start the hangman game
 function playWord(word){
+    console.log(figlet.textSync('Word Game', {
+        font: 'Broadway',
+        horizontalLayout: 'default',
+        verticalLayout: 'default'
+    }));
     //display the word with underscore and letters guessed correctly
     word.displayWord();
     //ask the user to enter a letter
@@ -28,21 +36,21 @@ function playWord(word){
         if(counter == 0){
             wordLosses++;
             writeTheScoreToFile('word_score.txt');
-            console.log(`The current score is ${wordWins} wins and ${wordLosses} losses.`);
+            console.log(chalk.blue(`The current score is ${wordWins} wins and ${wordLosses} losses.`));
             playAgain();
         }else{
             //get the letter after checking from word.js
-            let letter =word.checkLetter(response.guess)
+            let letter =word.checkLetter(response.guess.toLowerCase())
             //check if there is a letter came back and it's guessed correctly
             if(typeof letter != 'undefined' && letter.guessed){
-                console.log('\ncorrect\n');
+                console.log(chalk.green('\ncorrect\n'));
                 counter--;
                 //check if all the letters guessed correctly so it is a win
                 if(word.savedWord.length == word.wordRes.length){
                     console.log('You won this turn');
                     wordWins++;
                     writeTheScoreToFile('word_score.txt');
-                    console.log(`The current score is ${wordWins} wins and ${wordLosses} losses.`);
+                    console.log(chalk.blue(`The current score is ${wordWins} wins and ${wordLosses} losses.`));
                     playAgain();
                 }else{
                     //if there is still letters not been checked then continue playing
@@ -50,7 +58,7 @@ function playWord(word){
                 }
             }else{
                 //in case no letter came back then he guessed incorrect letter
-                console.log('\nIncorrect\n');
+                console.log(chalk.red('\nIncorrect\n'));
                 counter--;
                 playWord(word);
             }
@@ -73,13 +81,18 @@ function playAgain(){
             let word = generateWord();
             playWord(word);
         }else{
-            console.log('Game Ended');
+            console.log(chalk.yellow('Game Ended'));
             play();
         }
     })
 }
 //psychic game start
 function playChar(charToPlay){
+    console.log(figlet.textSync('Psychic Game', {
+        font: 'Broadway',
+        horizontalLayout: 'default',
+        verticalLayout: 'default'
+    }));
     //display underscore for the player
     charToPlay.displayLetter();
     inquirer.prompt([
@@ -92,22 +105,22 @@ function playChar(charToPlay){
         if(counter ==0){
             letterLosses++;
             writeTheScoreToFile('psychic_score.txt');
-            console.log(`The current score is ${letterWins} wins and ${letterLosses} losses.`);
+            console.log(chalk.blue(`The current score is ${letterWins} wins and ${letterLosses} losses.`));
             playAgainChar();
         }else{
             //get the letter from psychic js if it guessed correctly
-            let letter =charToPlay.checkLetter(response.guess)
+            let letter =charToPlay.checkLetter(response.guess.toLowerCase());
             //win condition
             if(typeof letter != 'undefined' && letter.guessed){
                 counter--;
-                console.log('You won this turn');
+                console.log(chalk.green('You won this turn'));
                 letterWins++;
                 writeTheScoreToFile('psychic_score.txt');
-                console.log(`The current score is ${letterWins} wins and ${letterLosses} losses.`);
+                console.log(chalk.blue(`The current score is ${letterWins} wins and ${letterLosses} losses.`));
                 playAgainChar();
             }else{
                 //player lose of he guessed incorrectly
-                console.log('\nIncorrect\n');
+                console.log(chalk.red('\nIncorrect\n'));
                 counter--;
                 playChar(charToPlay);
             }
@@ -130,7 +143,7 @@ function playAgainChar(){
             let char = generateLetter();
             playChar(char);
         }else{
-            console.log('Game Ended');
+            console.log(chalk.yellow('Game Ended'));
             play();
         }
     })

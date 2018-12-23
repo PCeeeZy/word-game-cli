@@ -4,6 +4,8 @@
   "description": "This is a CLI (command line interface) version of a Word-Guess Game, invoking characteristics of the classic word game, Hangman.",
   "main": "index.js",
   "dependencies": {
+    "chalk": "^2.4.1",
+    "figlet": "^1.2.1",
     "inquirer": "^6.2.1"
   },
   "devDependencies": {},

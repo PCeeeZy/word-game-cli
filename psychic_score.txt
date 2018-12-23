@@ -1,2 +1,2 @@
-wins: 3
+wins: 4
 losses: 3

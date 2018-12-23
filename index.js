@@ -1,14 +1,18 @@
 let inquirer = require('inquirer');
-let scoreboard = require('./scoreboard');
+let wordScoreboard = require('./wordScoreboard');
+let letterScoreboard = require('./LetterScoreboard');
 var Word = require('./Word');
+var character = require('./pyschic');
 let playWords = ['See you','gods plan','idol'];
+const chars = "abcdefghijklmnopqrstuvwxyz";
 let counter = 16;
-let wins = scoreboard.wins;
-let losses = scoreboard.losses;
-
+let wordWins = wordScoreboard.wins;
+let wordLosses = wordScoreboard.losses;
+let letterWins = wordScoreboard.wins;
+let letterLosses = wordScoreboard.losses;
 const fs = require("fs");
 
-function play(word){
+function playWord(word){
     word.displayWord();
     inquirer.prompt([
         {
@@ -17,8 +21,8 @@ function play(word){
         }
     ]).then(function(response){
         if(counter ==0){
-            losses++;
-            console.log(`The current score is ${wins} wins and ${losses} losses.`);
+            wordLosses++;
+            console.log(`The current score is ${wordWins} wins and ${wordLosses} losses.`);
             playAgain();
         }else{
             let letter =word.checkLetter(response.guess)
@@ -27,19 +31,84 @@ function play(word){
                 counter--;
                 if(word.savedWord.length == word.wordRes.length){
                     console.log('You won this turn');
-                    wins++;
-                    console.log(`The current score is ${wins} wins and ${losses} losses.`);
+                    wordWins++;
+                    console.log(`The current score is ${wordWins} wins and ${wordLosses} losses.`);
                     playAgain();
                 }else{
-                    play(word);
+                    playWord(word);
                 }
             }else{
                 console.log('\nIncorrect\n');
                 counter--;
-                play(word);
+                playWord(word);
             }
         }
         
+    })
+}
+function playAgain(){
+    inquirer.prompt([
+        {
+            type: "confirm",
+            message: "do you want to play WORD GUESS again",
+            name:"confirm"
+        }
+    ]).then(function(res){
+        if(res.confirm){
+            counter = 16;
+            let word = generateWord();
+            playWord(word);
+        }else{
+            console.log('Game Ended');
+            play();
+        }
+    })
+}
+function playChar(charToPlay){
+    charToPlay.displayLetter();
+    inquirer.prompt([
+        {
+            message:'guess a letter',
+            name:'guess'
+        }
+    ]).then(function(response){
+        if(counter ==0){
+            letterLosses++;
+            console.log(`The current score is ${letterWins} wins and ${letterLosses} losses.`);
+            playAgainChar();
+        }else{
+            let letter =charToPlay.checkLetter(response.guess)
+            if(typeof letter != 'undefined' && letter.guessed){
+                counter--;
+                console.log('You won this turn');
+                letterWins++;
+                console.log(`The current score is ${letterWins} wins and ${letterLosses} losses.`);
+                playAgainChar();
+            }else{
+                console.log('\nIncorrect\n');
+                counter--;
+                playChar(charToPlay);
+            }
+        }
+        
+    })
+}
+function playAgainChar(){
+    inquirer.prompt([
+        {
+            type: "confirm",
+            message: "do you want to play PSYCHIC again",
+            name:"confirm"
+        }
+    ]).then(function(res){
+        if(res.confirm){
+            counter = 16;
+            let char = generateLetter();
+            playChar(char);
+        }else{
+            console.log('Game Ended');
+            play();
+        }
     })
 }
 function generateWord(){
@@ -48,23 +117,35 @@ function generateWord(){
     let word = new Word(wordToGuess);
     return word;
 }
-function playAgain(){
+function generateLetter(){
+    let randomIndex = Math.floor(Math.random() * (chars.length-1));
+    let letterToGuess = chars.charAt(randomIndex);
+    let guessedChar = new character(letterToGuess);
+    return guessedChar;
+}
+function play(){
     inquirer.prompt([
         {
-            type: "confirm",
-            message: "do you want to play again",
-            name:"confirm"
+            type:'list',
+            message:"Choose what game to play",
+            choices:['Word Guess Game','Psychic Game','exit'],
+            name:'gameChoice'
         }
-    ]).then(function(res){
-        if(res.confirm){
-            counter = 16;
-            let word = generateWord();
-            play(word);
-        }else{
-            console.log('Game Ended');
-            process.exit();
+    ]).then(function(response){
+        switch (response.gameChoice) {
+            case 'Word Guess Game':
+                let word = generateWord();
+                playWord(word);
+                break;
+        
+            case 'Psychic Game':
+                let char = generateLetter();
+                playChar(char);
+                break;
+            case 'exit':
+                console.log('Goodbye so sad to leave me');
+                process.exit();
         }
-    })
+    });
 }
-let word = generateWord();
-play(word);
+play();

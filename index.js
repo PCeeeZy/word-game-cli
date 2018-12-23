@@ -1,31 +1,43 @@
+//game requirements
 let inquirer = require('inquirer');
 var Word = require('./Word');
 var character = require('./pyschic');
 const fs = require("fs");
+//words to be guessed for hangman
 let playWords = ['See you','gods plan','idol'];
+//array of letters to randomly choose
 const chars = "abcdefghijklmnopqrstuvwxyz";
+//counter to end the game after 16 tries 
 let counter = 16;
+//score variables for both games
 let wordLosses =0,wordWins=0,letterLosses=0,letterWins=0;
+//provide the score variables with saved scores in the games files
 getSavedScores();
-
+//start the hangman game
 function playWord(word){
+    //display the word with underscore and letters guessed correctly
     word.displayWord();
+    //ask the user to enter a letter
     inquirer.prompt([
         {
             message:'guess a letter',
             name:'guess'
         }
     ]).then(function(response){
+        //end of the game condition
         if(counter == 0){
             wordLosses++;
             writeTheScoreToFile('word_score.txt');
             console.log(`The current score is ${wordWins} wins and ${wordLosses} losses.`);
             playAgain();
         }else{
+            //get the letter after checking from word.js
             let letter =word.checkLetter(response.guess)
+            //check if there is a letter came back and it's guessed correctly
             if(typeof letter != 'undefined' && letter.guessed){
                 console.log('\ncorrect\n');
                 counter--;
+                //check if all the letters guessed correctly so it is a win
                 if(word.savedWord.length == word.wordRes.length){
                     console.log('You won this turn');
                     wordWins++;
@@ -33,9 +45,11 @@ function playWord(word){
                     console.log(`The current score is ${wordWins} wins and ${wordLosses} losses.`);
                     playAgain();
                 }else{
+                    //if there is still letters not been checked then continue playing
                     playWord(word);
                 }
             }else{
+                //in case no letter came back then he guessed incorrect letter
                 console.log('\nIncorrect\n');
                 counter--;
                 playWord(word);
@@ -44,7 +58,9 @@ function playWord(word){
         
     })
 }
+//when the player win or lose this function gets a call
 function playAgain(){
+    //a prompt to tell the player if he want to continue playing hangman or return to main menu
     inquirer.prompt([
         {
             type: "confirm",
@@ -62,7 +78,9 @@ function playAgain(){
         }
     })
 }
+//psychic game start
 function playChar(charToPlay){
+    //display underscore for the player
     charToPlay.displayLetter();
     inquirer.prompt([
         {
@@ -70,13 +88,16 @@ function playChar(charToPlay){
             name:'guess'
         }
     ]).then(function(response){
+        //lose condition
         if(counter ==0){
             letterLosses++;
             writeTheScoreToFile('psychic_score.txt');
             console.log(`The current score is ${letterWins} wins and ${letterLosses} losses.`);
             playAgainChar();
         }else{
+            //get the letter from psychic js if it guessed correctly
             let letter =charToPlay.checkLetter(response.guess)
+            //win condition
             if(typeof letter != 'undefined' && letter.guessed){
                 counter--;
                 console.log('You won this turn');
@@ -85,6 +106,7 @@ function playChar(charToPlay){
                 console.log(`The current score is ${letterWins} wins and ${letterLosses} losses.`);
                 playAgainChar();
             }else{
+                //player lose of he guessed incorrectly
                 console.log('\nIncorrect\n');
                 counter--;
                 playChar(charToPlay);
@@ -93,7 +115,9 @@ function playChar(charToPlay){
         
     })
 }
+//play psychic game a gain in case of win or lose
 function playAgainChar(){
+    //prompt to ask if the player like to continue the psychic game or return to main menu
     inquirer.prompt([
         {
             type: "confirm",
@@ -111,19 +135,24 @@ function playAgainChar(){
         }
     })
 }
+//select word randomly from the words array
 function generateWord(){
     let randomIndex = Math.floor(Math.random() * (playWords.length-1));
     let wordToGuess = playWords[randomIndex];
     let word = new Word(wordToGuess);
     return word;
 }
+//select letter randomly from the letters array
 function generateLetter(){
     let randomIndex = Math.floor(Math.random() * (chars.length-1));
     let letterToGuess = chars.charAt(randomIndex);
     let guessedChar = new character(letterToGuess);
     return guessedChar;
 }
+//a function to start the game
 function play(){
+    //a prompt to ask the player 
+    //which game to start or he want to exit
     inquirer.prompt([
         {
             type:'list',
@@ -148,6 +177,7 @@ function play(){
         }
     });
 }
+//function to save the scores in the files
 function writeTheScoreToFile(file){
     switch (file) {
         case 'word_score.txt':
@@ -158,6 +188,7 @@ function writeTheScoreToFile(file){
             break;
     }
 }
+//function to get the scores from the files
 function getSavedScores(){
     fs.readFile('word_score.txt',function(err,data){
         if(err){
@@ -182,4 +213,5 @@ function getSavedScores(){
         letterLosses = parseInt(lose_score[1]);
     });
 }
+//start the game
 play();

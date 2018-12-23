@@ -5,6 +5,7 @@ var Word = require('./Word');
 var character = require('./pyschic');
 let playWords = ['See you','gods plan','idol'];
 const chars = "abcdefghijklmnopqrstuvwxyz";
+
 let counter = 16;
 let wordWins = wordScoreboard.wins;
 let wordLosses = wordScoreboard.losses;
@@ -12,6 +13,7 @@ let letterWins = wordScoreboard.wins;
 let letterLosses = wordScoreboard.losses;
 const fs = require("fs");
 
+// function that initiates game using inquirer
 function playWord(word){
     word.displayWord();
     inquirer.prompt([
@@ -20,15 +22,18 @@ function playWord(word){
             name:'guess'
         }
     ]).then(function(response){
+        // loss condition
         if(counter ==0){
             wordLosses++;
             console.log(`The current score is ${wordWins} wins and ${wordLosses} losses.`);
             playAgain();
         }else{
+            // win or go again condition 
             let letter =word.checkLetter(response.guess)
             if(typeof letter != 'undefined' && letter.guessed){
                 console.log('\ncorrect\n');
                 counter--;
+                // compare word result to the saved word 
                 if(word.savedWord.length == word.wordRes.length){
                     console.log('You won this turn');
                     wordWins++;
@@ -46,6 +51,7 @@ function playWord(word){
         
     })
 }
+// function to prompt user to play again
 function playAgain(){
     inquirer.prompt([
         {

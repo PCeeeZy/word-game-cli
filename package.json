@@ -1,0 +1,23 @@
+{
+  "name": "word-game-cli",
+  "version": "1.0.0",
+  "description": "This is a CLI (command line interface) version of a Word-Guess Game, invoking characteristics of the classic word game, Hangman.",
+  "main": "index.js",
+  "dependencies": {
+    "inquirer": "^6.2.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PCeeeZy/word-game-cli.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/PCeeeZy/word-game-cli/issues"
+  },
+  "homepage": "https://github.com/PCeeeZy/word-game-cli#readme"
+}

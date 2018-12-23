@@ -1,7 +1,7 @@
 function Letter( guessed, letter){
     this.guessed = false;
     this.letter = letter;
-    //functioon to display a letter or underscore
+    //function to display a letter or underscore
     this.display=function(){
         if(this.guessed){
             return this.letter;

@@ -88,7 +88,7 @@ function playChar(charToPlay){
             name:'guess'
         }
     ]).then(function(response){
-        //loose condition
+        //lose condition
         if(counter ==0){
             letterLosses++;
             writeTheScoreToFile('psychic_score.txt');
